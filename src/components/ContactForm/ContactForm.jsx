@@ -1,18 +1,12 @@
-// import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import css from './ContactForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { getContacts } from 'redux/selectors';
-import { addContact } from 'redux/contactsSlice';
+import { addContact } from 'redux/operations';
 
-// const KEY = {
-//   name: 'name',
-//   number: 'number',
-// };
 
-export default function ContactForm({items, addContactsProps}) {
-  // const [nameInput, setNameInput] = useState('');
-  // const [number, setNumber] = useState('');
+
+export default function ContactForm() {
   const contacts = useSelector(getContacts);
   const dispatch = useDispatch();
 
@@ -21,23 +15,7 @@ export default function ContactForm({items, addContactsProps}) {
   const nameInputId = nanoid();
   const telInputId = nanoid();
 
-  // const handleChange = e => {
-  //   const { name, value } = e.target;
-
-  //   switch (name) {
-  //     case KEY.name:
-  //       setNameInput(value)
-  //       break;
-  //     case KEY.number:
-  //       setNumber(value)
-  //       break;
-  //     default:
-  //       console.log('Sorry, we are out of ' + name + '.');
-  //       return;
-  //   }
-  // };
-
-  const handleSubmit = e => {
+    const handleSubmit = e => {
     e.preventDefault();
 
     const form = e.currentTarget;
@@ -56,7 +34,7 @@ export default function ContactForm({items, addContactsProps}) {
     });
 
     if (!presentContact) {
-      dispatch(addContact(form.name.value, form.number.value));
+      dispatch(addContact({name: form.name.value, phone: form.number.value}));
 
       form.reset();
     }

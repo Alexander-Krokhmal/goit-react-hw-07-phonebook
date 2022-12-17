@@ -1,51 +1,22 @@
-// import { useState, useEffect } from 'react';
 import { Section } from './Section/Section';
 import ContactForm from './ContactForm/ContactForm';
-// import { ContactList } from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 import { ContactListItem } from './ContactList/ContactListItem';
+import { useDispatch, useSelector } from 'react-redux';
+import { getError, getIsLoading } from 'redux/selectors';
+import { useEffect } from 'react';
+import { fetchContacts } from 'redux/operations';
 
-// const LS_KEY = 'contact-details';
-// const initialContacts = [
-//   { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-//   { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-//   { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-//   { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-// ];
 
 const App = () => {
-  // const [contacts, setContacts] = useState(() => JSON.parse(localStorage.getItem(LS_KEY)) ?? initialContacts);
-  // const [filter, setFilter] = useState('');
+  const isLoading = useSelector(getIsLoading);
+  const error = useSelector(getError);
 
-  // useEffect(() => {
-  //   if (contacts.length > 0) {
-  //     window.localStorage.setItem(LS_KEY, JSON.stringify(contacts));
-  //   }
-  // }, [contacts]);
+  const dispatch = useDispatch();
 
-  // const addContact = (name, number, id) => {
-  //   setContacts(prevState => 
-  //     [...prevState,
-  //     { name: name, number: number, id: id },]
-  //   )
-  // };
-
-  // const deleteContact = contactId => {
-  //   setContacts(contacts.filter(contact => contact.id !== contactId),
-  //   )
-  // };
-
-  // const filterContacts = e => {
-  //   setFilter(e.target.value);
-
-  // };
-
-  // const renderContacts = () => {
-  //   const normalizedFilter = filter.toLowerCase();
-  //   const visibleContact = contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter));
-
-  //   return visibleContact;
-  // };
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
 
     return (
@@ -66,7 +37,8 @@ const App = () => {
 
         <Section title="Contacts">
           <Filter/>
-          <ContactListItem/>
+          {isLoading && !error && <b>Request in progress...</b>}
+          <ContactListItem />
         </Section>
       </div>
     );

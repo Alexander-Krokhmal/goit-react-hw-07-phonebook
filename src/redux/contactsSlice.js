@@ -1,47 +1,88 @@
-import { createSlice  } from "@reduxjs/toolkit";
-import { nanoid } from "nanoid";
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; 
+import { createSlice } from "@reduxjs/toolkit";
+import { addContact, deleteContact, fetchContacts } from "./operations";
 
-const initialContactsState = [
-    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-  ];
+const handlePending = state => {
+    state.isLoading = true;
+};
 
-const contactsSlice = createSlice({
+const handleRejected = (state, action) => {
+    state.isLoading = false;
+    state.error = action.payload;
+}
+
+const contactsSliceNew = createSlice({
     name: 'contacts',
-    initialState: { contacts: initialContactsState },
-    reducers: {
-        addContact: {
-            reducer (state, action) {
-            state.contacts.push(action.payload);
-            },
-            prepare(name, number) {
-                return {
-                    payload: {
-                        name,
-                        number,
-                        id: nanoid(),
-                    },
-                };
-            },
+    initialState: {
+        items: [],
+        isLoading: false,
+        error: null,
+    },
+    extraReducers: {
+        [fetchContacts.pending]: handlePending,
+        [addContact.pending]: handlePending,
+        [deleteContact.pending]: handlePending,
+        [fetchContacts.rejected]: handleRejected,
+        [addContact.rejected]: handleRejected,    
+        [deleteContact.rejected]: handleRejected,
+
+        [fetchContacts.fulfilled](state, action) {
+            state.isLoading = false;
+            state.error = null;
+            state.items = action.payload;
+        },
+
+        [addContact.fulfilled](state, action) {
+            state.isLoading = false;
+            state.error = null;
+            state.items.push(action.payload);
         },
         
-        deleteContact(state, action) {
-            const index = state.contacts.findIndex(contact => contact.id === action.payload);
-            state.contacts.splice(index, 1);
-        },        
-    },   
+        [deleteContact.fulfilled](state, action) {
+            state.isLoading = false;
+            state.error = null;
+            const index = state.items.findIndex(contact => contact.id === action.payload.id);
+            state.items.splice(index, 1);
+        },
+    }
 });
 
-export const { addContact, deleteContact } = contactsSlice.actions;
+export const contactsReducer = contactsSliceNew.reducer;
+
+
+// export const {fetchInProgress, fetchSuccess, fetchError } = contactsSliceNew.actions;
+
+// const contactsSlice = createSlice({
+//     name: 'contacts',
+//     initialState: { contacts: initialContactsState },
+//     reducers: {
+//         addContact: {
+//             reducer (state, action) {
+//             state.contacts.push(action.payload);
+//             },
+//             prepare(name, number) {
+//                 return {
+//                     payload: {
+//                         name,
+//                         number,
+//                         id: nanoid(),
+//                     },
+//                 };
+//             },
+//         },
+        
+//         deleteContact(state, action) {
+            // const index = state.contacts.findIndex(contact => contact.id === action.payload);
+            // state.contacts.splice(index, 1);
+//         },        
+//     },   
+// });
+
+// export const { addContact, deleteContact } = contactsSlice.actions;
 // export const contactsReducer = contactsSlice.reducer;
 
-const persistConfig = {
-    key: 'contacts',
-    storage,
-};
+// const persistConfig = {
+//     key: 'contacts',
+//     storage,
+// };
   
-export const contactsReducer = persistReducer(persistConfig, contactsSlice.reducer);
+// export const contactsReducer = persistReducer(persistConfig, contactsSlice.reducer);

@@ -1,6 +1,6 @@
 // import propTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact } from 'redux/contactsSlice';
+import { deleteContact } from 'redux/operations';
 import { getContacts, getFilter } from 'redux/selectors';
 import css from './ContactList.module.css';
 
@@ -21,17 +21,17 @@ export const ContactListItem = () => {
   const handleDelete = e => {
     const currentId = e.currentTarget.id;
     console.log(currentId);
-    dispatch(deleteContact(currentId))
+    dispatch(deleteContact(currentId));
   }
 
     return (
         <ul className={css.contacts_list}>
-        {items.map(({name, number, id}) => (
+        {items.map(({name, phone: number, id}) => (
           <li  className={css.contact_item} key={id}>
             <span className={css.status}></span>
             <span>
               {' '}
-              {name}: {number}
+              {name}: {number.slice(0,13)}
             </span>
             <button className={css.btn} onClick={handleDelete} id={id}>
               Delete
